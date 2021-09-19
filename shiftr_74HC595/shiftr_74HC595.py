@@ -8,7 +8,7 @@ class ShiftRegister:
     latch_pin => pin 12 on the 74HC595
     clock_pin => pin 11 on the 74HC595
     """
-    def __init__(self, data_pin, latch_pin, clock_pin):
+    def __init__(self, data_pin, latch_pin, clock_pin, numberOf595s=1):
         self.data_pin = data_pin
         self.latch_pin = latch_pin
         self.clock_pin = clock_pin
@@ -17,7 +17,9 @@ class ShiftRegister:
         GPIO.setup(self.latch_pin, GPIO.OUT)
         GPIO.setup(self.clock_pin, GPIO.OUT)
 
-        self.outputs = [GPIO.LOW] * 8
+        self.outputs = [GPIO.LOW] * (8*numberOf595s)
+        # DEBUG
+        print(self.outputs)
 
     """
     output_number => Value from 0 to 7 pointing to the output pin on the 74HC595
@@ -36,20 +38,23 @@ class ShiftRegister:
         try:
             self.outputs[output_number] = value
         except IndexError:
-            raise ValueError("Invalid output number. Can be only an int from 0 to 7")
+            raise ValueError("Invalid output number. Can be only an int from 0 to " + len(self.outputs))
 
     def setOutputs(self, outputs):
-        if 8 != len(outputs):
-            raise ValueError("setOutputs must be an array with 8 elements")
+        if len(self.outputs) != len(outputs):
+            raise ValueError("setOutputs must be an array with " + len(self.outputs) + " elements")
 
         self.outputs = outputs
 
     def latch(self):
         GPIO.output(self.latch_pin, GPIO.LOW)
 
-        for i in range(7, -1, -1):
+        for i in range(len(self.outputs)-1, -1, -1):
+            print (self.outputs[i], end='')
+            print (",", end='')
             GPIO.output(self.clock_pin, GPIO.LOW)
             GPIO.output(self.data_pin, self.outputs[i])
             GPIO.output(self.clock_pin, GPIO.HIGH)
+        print ("")
 
         GPIO.output(self.latch_pin, GPIO.HIGH)
