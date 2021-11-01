@@ -19,7 +19,7 @@ class ShiftRegister:
 
         self.outputs = [GPIO.LOW] * (8*numberOf595s)
         # DEBUG
-        print(self.outputs)
+        # print(self.outputs)
 
     """
     output_number => Value from 0 to 7 pointing to the output pin on the 74HC595
@@ -50,11 +50,11 @@ class ShiftRegister:
         GPIO.output(self.latch_pin, GPIO.LOW)
 
         for i in range(len(self.outputs)-1, -1, -1):
-            print (self.outputs[i], end='')
-            print (",", end='')
+            # print (self.outputs[i], end='')
+            # print (",", end='')
             GPIO.output(self.clock_pin, GPIO.LOW)
             GPIO.output(self.data_pin, self.outputs[i])
             GPIO.output(self.clock_pin, GPIO.HIGH)
-        print ("")
+        # print ("")
 
         GPIO.output(self.latch_pin, GPIO.HIGH)
